@@ -43,8 +43,10 @@ class LanguageModelConfig(BaseModel):
         ApiKeyMissingError
             If the API key is missing and is required.
         """
-        if self.auth_type == AuthType.APIKey and (
-            self.api_key is None or self.api_key.strip() == ""
+        if (
+            self.auth_type == AuthType.APIKey
+            and self.type not in (ModelType.OpenAICodexChat,)
+            and (self.api_key is None or self.api_key.strip() == "")
         ):
             raise ApiKeyMissingError(
                 self.type,

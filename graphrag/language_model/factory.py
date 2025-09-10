@@ -14,6 +14,7 @@ from graphrag.language_model.providers.fnllm.models import (
     OpenAIChatFNLLM,
     OpenAIEmbeddingFNLLM,
 )
+from graphrag.language_model.providers.codex.models import OpenAICodexLocal
 
 
 class ModelFactory:
@@ -104,6 +105,9 @@ ModelFactory.register_chat(
 )
 ModelFactory.register_chat(
     ModelType.OpenAIChat.value, lambda **kwargs: OpenAIChatFNLLM(**kwargs)
+)
+ModelFactory.register_chat(
+    ModelType.OpenAICodexChat.value, lambda **kwargs: OpenAICodexLocal(**kwargs)
 )
 
 ModelFactory.register_embedding(
