@@ -42,6 +42,19 @@ def test_missing_openai_required_api_key() -> None:
         create_graphrag_config({"models": model_config_missing_api_key})
 
 
+def test_codex_does_not_require_api_key() -> None:
+    model_config = {
+        defs.DEFAULT_CHAT_MODEL_ID: {
+            "type": ModelType.OpenAICodexChat,
+            "model": "dummy-codex",
+            "encoding_model": "cl100k_base",
+        },
+        defs.DEFAULT_EMBEDDING_MODEL_ID: DEFAULT_EMBEDDING_MODEL_CONFIG,
+    }
+
+    create_graphrag_config({"models": model_config})
+
+
 def test_missing_azure_api_key() -> None:
     model_config_missing_api_key = {
         defs.DEFAULT_CHAT_MODEL_ID: {

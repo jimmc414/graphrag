@@ -90,6 +90,7 @@ class ModelType(str, Enum):
     # Chat Completion
     OpenAIChat = "openai_chat"
     AzureOpenAIChat = "azure_openai_chat"
+    OpenAICodexChat = "openai_codex_chat"
 
     # Debug
     MockChat = "mock_chat"

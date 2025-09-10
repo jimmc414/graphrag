@@ -99,3 +99,19 @@ extract_graph:
 ```
 
 Note that your custom model will be passed the same params for init and method calls that we use throughout GraphRAG. There is not currently any ability to define custom parameters, so you may need to use closure scope or a factory pattern within your implementation to get custom config values.
+
+### Local OpenAI Codex
+
+GraphRAG includes a lightweight provider named `openai_codex_chat` which simulates an
+OpenAI Codex style model without requiring an API key.  This is useful when experimenting
+locally or when a true Codex implementation is available on the host machine.
+
+```yaml
+models:
+  codex_local:
+    type: openai_codex_chat
+    model: dummy-codex
+```
+
+The bundled implementation simply returns placeholder text.  It can be extended to wrap a
+real Codex model or local inference server.
