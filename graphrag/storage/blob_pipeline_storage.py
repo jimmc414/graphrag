@@ -312,54 +312,59 @@ class BlobPipelineStorage(PipelineStorage):
             return ""
 
 
-def validate_blob_container_name(container_name: str):
-    """
-    Check if the provided blob container name is valid based on Azure rules.
+def validate_blob_container_name(container_name: str) -> bool:
+    """Validate the provided blob container name according to Azure rules.
 
-        - A blob container name must be between 3 and 63 characters in length.
-        - Start with a letter or number
-        - All letters used in blob container names must be lowercase.
-        - Contain only letters, numbers, or the hyphen.
-        - Consecutive hyphens are not permitted.
-        - Cannot end with a hyphen.
+    The container name must:
+
+    - Be between 3 and 63 characters in length
+    - Start with a letter or number
+    - Use only lowercase letters, numbers, or hyphens
+    - Not contain consecutive hyphens
+    - Not end with a hyphen
 
     Args:
-    -----
-    container_name (str)
-        The blob container name to be validated.
+        container_name: The blob container name to be validated.
 
-    Returns
-    -------
-        bool: True if valid, False otherwise.
+    Returns:
+        True if the name satisfies all rules.
+
+    Raises:
+        ValueError: If the provided name violates any of the Azure rules.
     """
     # Check the length of the name
     if len(container_name) < 3 or len(container_name) > 63:
-        return ValueError(
-            f"Container name must be between 3 and 63 characters in length. Name provided was {len(container_name)} characters long."
+        raise ValueError(
+            "Container name must be between 3 and 63 characters in length. "
+            f"Name provided was {len(container_name)} characters long."
         )
 
     # Check if the name starts with a letter or number
     if not container_name[0].isalnum():
-        return ValueError(
-            f"Container name must start with a letter or number. Starting character was {container_name[0]}."
+        raise ValueError(
+            "Container name must start with a letter or number. "
+            f"Starting character was {container_name[0]}."
         )
 
     # Check for valid characters (letters, numbers, hyphen) and lowercase letters
     if not re.match(r"^[a-z0-9-]+$", container_name):
-        return ValueError(
-            f"Container name must only contain:\n- lowercase letters\n- numbers\n- or hyphens\nName provided was {container_name}."
+        raise ValueError(
+            "Container name must only contain:\n- lowercase letters\n- numbers\n- or hyphens\n"
+            f"Name provided was {container_name}."
         )
 
     # Check for consecutive hyphens
     if "--" in container_name:
-        return ValueError(
-            f"Container name cannot contain consecutive hyphens. Name provided was {container_name}."
+        raise ValueError(
+            "Container name cannot contain consecutive hyphens. "
+            f"Name provided was {container_name}."
         )
 
     # Check for hyphens at the end of the name
     if container_name[-1] == "-":
-        return ValueError(
-            f"Container name cannot end with a hyphen. Name provided was {container_name}."
+        raise ValueError(
+            "Container name cannot end with a hyphen. "
+            f"Name provided was {container_name}."
         )
 
     return True
