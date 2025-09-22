@@ -28,6 +28,17 @@ gh_pages = os.environ.get("GH_PAGES") is not None
 # cspell:disable-next-line well-known-key
 WELL_KNOWN_AZURITE_CONNECTION_STRING = "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1"
 
+# Only include Azure Search credentials when they actually exist to avoid inserting
+# ``None`` values into the mocked environment.
+AZURE_AI_SEARCH_ENV = {
+    key: value
+    for key, value in {
+        "AZURE_AI_SEARCH_URL_ENDPOINT": os.getenv("AZURE_AI_SEARCH_URL_ENDPOINT"),
+        "AZURE_AI_SEARCH_API_KEY": os.getenv("AZURE_AI_SEARCH_API_KEY"),
+    }.items()
+    if value is not None
+}
+
 KNOWN_WARNINGS = [NO_COMMUNITY_RECORDS_WARNING]
 
 
@@ -230,8 +241,9 @@ class TestIndexer:
             "LOCAL_BLOB_STORAGE_CONNECTION_STRING": WELL_KNOWN_AZURITE_CONNECTION_STRING,
             "GRAPHRAG_CHUNK_SIZE": "1200",
             "GRAPHRAG_CHUNK_OVERLAP": "0",
-            "AZURE_AI_SEARCH_URL_ENDPOINT": os.getenv("AZURE_AI_SEARCH_URL_ENDPOINT"),
-            "AZURE_AI_SEARCH_API_KEY": os.getenv("AZURE_AI_SEARCH_API_KEY"),
+            # Azure Search settings are optional locally; skip any that are unset so
+            # ``mock.patch.dict`` only receives concrete string overrides.
+            **AZURE_AI_SEARCH_ENV,
         },
         clear=True,
     )
