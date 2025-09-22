@@ -97,6 +97,10 @@ class GraphExtractor:
         source_doc_map: dict[int, str] = {}
 
         # Wire defaults into the prompt variables
+        entity_types = prompt_variables.get(self._entity_types_key)
+        if not entity_types:
+            entity_types = DEFAULT_ENTITY_TYPES
+
         prompt_variables = {
             **prompt_variables,
             self._tuple_delimiter_key: prompt_variables.get(self._tuple_delimiter_key)
@@ -107,9 +111,7 @@ class GraphExtractor:
                 self._completion_delimiter_key
             )
             or DEFAULT_COMPLETION_DELIMITER,
-            self._entity_types_key: ",".join(
-                prompt_variables[self._entity_types_key] or DEFAULT_ENTITY_TYPES
-            ),
+            self._entity_types_key: ",".join(entity_types),
         }
 
         for doc_index, text in enumerate(texts):
