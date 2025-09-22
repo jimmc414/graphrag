@@ -5,6 +5,7 @@
 These tests will test the CacheFactory class and the creation of each cache type that is natively supported.
 """
 
+from pathlib import Path
 import sys
 
 import pytest
@@ -15,6 +16,7 @@ from graphrag.cache.memory_pipeline_cache import InMemoryCache
 from graphrag.cache.noop_pipeline_cache import NoopPipelineCache
 from graphrag.cache.pipeline_cache import PipelineCache
 from graphrag.config.enums import CacheType
+from graphrag.storage.file_pipeline_storage import FilePipelineStorage
 
 # cspell:disable-next-line well-known-key
 WELL_KNOWN_BLOB_STORAGE_KEY = "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;"
@@ -34,10 +36,17 @@ def test_create_memory_cache():
     assert isinstance(cache, InMemoryCache)
 
 
-def test_create_file_cache():
-    kwargs = {"root_dir": "/tmp", "base_dir": "testcache"}
+def test_create_file_cache(tmp_path):
+    project_root = tmp_path / "project-root"
+    base_dir = "testcache"
+
+    kwargs = {"root_dir": str(project_root), "base_dir": base_dir}
     cache = CacheFactory.create_cache(CacheType.file.value, kwargs)
     assert isinstance(cache, JsonPipelineCache)
+
+    storage = cache._storage
+    assert isinstance(storage, FilePipelineStorage)
+    assert Path(storage._root_dir) == project_root / base_dir
 
 
 def test_create_blob_cache():
